@@ -118,6 +118,29 @@ export default function TikTokFetcher() {
     document.body.removeChild(link);
   };
 
+  const downloadImage = async (imageUrl: string | undefined, filename: string) => {
+    if (!imageUrl) {
+      setError('Image URL is not available for this option.');
+      return;
+    }
+    try {
+      const response = await axios.get(`/api/download-image?url=${encodeURIComponent(imageUrl)}&filename=${encodeURIComponent(filename)}`, {
+        responseType: 'blob',
+      });
+      const blob = new Blob([response.data], { type: response.headers['content-type'] });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(link.href);
+    } catch (err) {
+      console.error('Error downloading image:', err);
+      setError('Failed to download image.');
+    }
+  };
+
   const RenderData = () => {
     if (!data || data.error) return null;
 
@@ -189,6 +212,22 @@ export default function TikTokFetcher() {
                   className={styles.downloadButtonSecondary}
                 >
                   HD Download <PulseText text="With Watermark" type="watermark" />
+                </button>
+              )}
+              {data.profile.avatar && (
+                <button
+                  onClick={() => downloadImage(data.profile.avatar, `${data.profile.username}_avatar.jpg`)}
+                  className={styles.downloadButtonSecondary}
+                >
+                  Download Creator's Logo
+                </button>
+              )}
+              {data.thumbnail && (
+                <button
+                  onClick={() => downloadImage(data.thumbnail, `${data.profile.username}_${data.title.substring(0,10).replace(/[^a-zA-Z0-9]/g, '')}_thumbnail.jpg`)}
+                  className={styles.downloadButtonSecondary}
+                >
+                  Download Video Thumbnail
                 </button>
               )}
             </div>
