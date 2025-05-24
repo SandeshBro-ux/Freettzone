@@ -200,7 +200,7 @@ export default function TikTokFetcher() {
             <div className={styles.downloadButtonsContainer}>
               {data.downloadOptions.proxyUrl && (
                 <button 
-                  onClick={() => downloadVideo(data.downloadOptions?.proxyUrl, `${data.profile.username}_${data.title.substring(0,20).replace(/[^a-zA-Z0-9]/g, '')}_HD_NoWatermark.mp4`)}
+                  onClick={() => downloadVideo(data.downloadOptions?.proxyUrl, `freettzone_HD_NoWatermark.mp4`)}
                   className={styles.downloadButtonPrimary}
                 >
                   HD Download <PulseText text="Without Watermark" type="no-watermark" />
@@ -208,7 +208,7 @@ export default function TikTokFetcher() {
               )}
               {data.downloadOptions.altProxyUrl && (
                 <button 
-                  onClick={() => downloadVideo(data.downloadOptions?.altProxyUrl, `${data.profile.username}_${data.title.substring(0,20).replace(/[^a-zA-Z0-9]/g, '')}_HD_Watermarked.mp4`)}
+                  onClick={() => downloadVideo(data.downloadOptions?.altProxyUrl, `freettzone_HD_Watermarked.mp4`)}
                   className={styles.downloadButtonSecondary}
                 >
                   HD Download <PulseText text="With Watermark" type="watermark" />
@@ -216,7 +216,7 @@ export default function TikTokFetcher() {
               )}
               {data.profile.avatar && (
                 <button
-                  onClick={() => downloadImage(data.profile.avatar, `${data.profile.username}_avatar.jpg`)}
+                  onClick={() => downloadImage(data.profile.avatar, `freettzone_avatar.jpg`)}
                   className={styles.downloadButtonSecondary}
                 >
                   Download Creator's Logo
@@ -224,7 +224,7 @@ export default function TikTokFetcher() {
               )}
               {data.thumbnail && (
                 <button
-                  onClick={() => downloadImage(data.thumbnail, `${data.profile.username}_${data.title.substring(0,10).replace(/[^a-zA-Z0-9]/g, '')}_thumbnail.jpg`)}
+                  onClick={() => downloadImage(data.thumbnail, `freettzone_thumbnail.jpg`)}
                   className={styles.downloadButtonSecondary}
                 >
                   Download Video Thumbnail
