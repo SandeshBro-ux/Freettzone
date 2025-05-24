@@ -248,8 +248,13 @@ export default async function handler(
       downloadOptions: {
         // For "Download (No Watermark)" button
         proxyUrl: `/api/tiktok-video-download/${encodeURIComponent(videoIdFromUrl)}/Freetiktokzone_HD.mp4?username=${encodeURIComponent(usernameFromUrl)}`,
-        // For "Download SD" button
-        altProxyUrl: `/api/tiktok-video-download/${encodeURIComponent(videoIdFromUrl)}/Freetiktokzone_SD.mp4?username=${encodeURIComponent(usernameFromUrl)}&pref_source=alt1`
+        
+        // For "Download SD" button - now with watermark option
+        altProxyUrl: `/api/tiktok-video-download/${encodeURIComponent(videoIdFromUrl)}/Freetiktokzone_SD.mp4?username=${encodeURIComponent(usernameFromUrl)}&pref_source=alt1&watermark=true`,
+        
+        // Original download URLs (if available directly from TikTok)
+        videoUrl: videoUrl || '',
+        hdVideoUrl: hdVideoUrl || ''
       }
     };
 

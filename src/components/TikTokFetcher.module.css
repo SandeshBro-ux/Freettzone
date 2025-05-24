@@ -1,383 +1,567 @@
 .container {
   width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #1E1E1E; /* Surface color */
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
+/* Front Page Specific Styles */
+.frontPageContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 3rem; /* Increased margin */
+}
+
+.tiktokLogo {
+  width: 100px; /* Increased from previous size e.g. 80px or if it was auto */
+  height: auto; /* Maintain aspect ratio */
+  margin-bottom: 1.5rem; /* Increased margin */
+  /* filter: drop-shadow(0 0 10px #fe2c55) drop-shadow(0 0 20px #25f4ee); remove if too much */
+  animation: bounce 2s infinite alternate;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.mainTitle { /* Matches .title from Home.module.css for consistency */
+  margin: 0 0 1rem;
+  line-height: 1.15;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.mainDescription { /* Matches .description from Home.module.css */
+  line-height: 1.6;
+  font-size: 1.1rem;
+  color: #A0A0A0;
+  margin-bottom: 1.5rem;
+  max-width: 500px;
+}
+
+.featuresListHome { /* Matches .featuresList from Home.module.css */
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+  text-align: left;
+  display: inline-block;
+}
+
+.featuresListHome li {
+  font-size: 1rem;
+  color: #C0C0C0;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.featuresListHome li::before {
+  content: '✓';
+  color: #FFFFFF;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+/* Search Container */
 .searchContainer {
-  padding: 24px;
-  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  gap: 10px;
+  background-color: #2C2C2C; /* Slightly lighter for input area */
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .inputWrapper {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: relative;
+  flex-grow: 1;
 }
 
 .input {
-  flex: 1;
-  padding: 14px 16px;
-  font-size: 16px;
-  border: 2px solid #f0f0f0;
-  border-radius: 8px;
-  background: #f9f9f9;
-  transition: all 0.2s ease;
-  color: #333;
-  outline: none;
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1rem;
+  background-color: #333333; /* Input field background */
+  color: #E0E0E0;
+  border: 1px solid #444444;
+  border-radius: 6px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input:focus {
-  border-color: #fe2c55;
-  background: #fff;
-  box-shadow: 0 0 0 4px rgba(254, 44, 85, 0.1);
+  outline: none;
+  border-color: #BB86FC; /* Accent color on focus, can be white */
+  box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.3); /* Optional focus ring */
 }
 
 .input::placeholder {
-  color: #999;
+  color: #A0A0A0;
 }
 
 .button {
-  padding: 14px 24px;
-  background: #fe2c55;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  padding: 12px 20px;
+  font-size: 1rem;
   font-weight: 500;
+  background-color: #FFFFFF; /* White button */
+  color: #121212; /* Dark text on white button */
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  white-space: nowrap;
 }
 
 .button:hover {
-  background: #e6113b;
+  background-color: #F0F0F0; /* Slightly off-white on hover */
   transform: translateY(-1px);
 }
 
 .button:disabled {
-  background: #ffb8c5;
+  background-color: #555555;
+  color: #888888;
   cursor: not-allowed;
-  transform: none;
+  transform: translateY(0);
 }
 
-.loaderContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 24px;
-  height: 24px;
-}
-
+/* Loader */
 .loader {
+  border: 3px solid #555; /* Light grey border for loader track */
+  border-top: 3px solid #FFFFFF; /* White for spinning part */
+  border-radius: 50%;
   width: 20px;
   height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: #fff;
-  animation: spin 0.8s linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.errorMessage {
-  margin-top: 16px;
-  padding: 12px 16px;
-  background-color: #fff0f0;
+/* Error Message */
+.errorContainer {
+  background-color: rgba(255, 255, 255, 0.05); /* Subtle background for error */
+  color: #FF6B6B; /* Error text color */
+  padding: 15px;
   border-radius: 8px;
-  color: #e6113b;
-  font-size: 14px;
+  border: 1px solid #FF6B6B;
+  margin-top: 1.5rem;
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .errorIcon {
-  width: 20px;
-  height: 20px;
-  fill: #e6113b;
-  flex-shrink: 0;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
+.error {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Results Styling */
 .resultContainer {
-  background: #fff;
-}
-
-.headerSection {
-  padding: 16px 24px;
+  margin-top: 2rem;
+  width: 100%;
+  background-color: #1E1E1E; /* Matches main container surface */
+  padding: 1.5rem;
+  border-radius: 8px;
 }
 
 .profileSection {
   display: flex;
   align-items: center;
-  gap: 12px;
+  margin-bottom: 1.5rem;
 }
 
 .avatar {
-  width: 64px;
-  height: 64px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.usernameContainer {
-  display: flex;
-  flex-direction: column;
-}
-
-.usernameLabel {
-  font-size: 13px;
-  color: #888;
-  margin-bottom: 2px;
+  margin-right: 15px;
+  border: 2px solid #333333;
 }
 
 .username {
-  margin: 0;
-  font-size: 18px;
+  font-size: 1.3rem;
   font-weight: 600;
-  color: #333;
+  color: #FFFFFF;
 }
 
 .mediaContainer {
-  position: relative;
   width: 100%;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
   overflow: hidden;
-  aspect-ratio: 9/16;
-  max-height: 600px;
-  background-color: #000;
-  display: flex;
-  justify-content: center;
-  margin: 0 auto;
-  max-width: 340px;
+  background-color: #121212; /* Darker background for media if it doesn't fill */
 }
 
 .thumbnail {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
+  height: auto;
+  max-height: 500px; /* Limit thumbnail height */
+  object-fit: contain; /* Show full image, letterboxed if necessary */
+  display: block;
 }
 
-.overlay {
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
+.videoTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #E0E0E0;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.hashtagsContainer {
+  margin-bottom: 1.5rem;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
-.duration {
-  background-color: rgba(0, 0, 0, 0.6);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.durationIcon {
-  width: 14px;
-  height: 14px;
-  fill: white;
+.hashtag {
+  background-color: #333333;
+  color: #BB86FC; /* Accent for hashtags */
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  font-weight: 500;
 }
 
 .statsContainer {
   display: flex;
-  justify-content: space-around;
-  padding: 12px 24px;
-  background-color: #f8f8f8;
-  border-bottom: 1px solid #f0f0f0;
-  max-width: 340px;
-  margin: 0 auto;
-  flex-wrap: wrap;
-  gap: 12px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: rgba(30, 30, 30, 0.8);
+  border-radius: 8px;
+  overflow-x: auto; /* Allow horizontal scrolling on very small screens */
 }
 
 .statItem {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  min-width: calc(50% - 12px);
+  justify-content: center;
+  text-align: center;
+  padding: 0.5rem 0.75rem;
+  min-width: 70px;
+  flex: 1;
 }
 
 .statIcon {
-  width: 24px;
-  height: 24px;
-  fill: #fe2c55;
-}
-
-.statValue {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  font-size: 16px;
-  color: #333;
-}
-
-.statValue strong {
-  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #E0E0E0;
 }
 
 .statLabel {
-  font-size: 12px;
-  color: #888;
-  margin-top: -2px;
+  font-size: 0.75rem;
+  color: #A0A0A0;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
 }
 
-.contentInfo {
-  padding: 20px 24px;
+.statValue {
+  font-size: 1rem;
+  color: #FFFFFF;
+  font-weight: 600;
 }
 
+/* Remove old general span styling for statsContainer if it conflicts */
+.statsContainer > span { /* Target direct children if they were spans before, now they are divs */
+  /* display: flex; remove or adjust */
+  /* align-items: center; remove or adjust */
+  /* justify-content: center; remove or adjust */
+}
+
+.statsContainer span strong { /* This style might be obsolete or need adjustment */
+  display: block;
+  font-size: 1.2rem;
+  color: #E0E0E0;
+  margin-bottom: 0.25rem;
+}
+
+/* Download Section */
 .downloadSection {
-  margin-bottom: 24px;
-  padding: 18px;
-  background-color: #f8f8f8;
-  border-radius: 12px;
+  margin-top: 2rem;
+  border-top: 1px solid #333333;
+  padding-top: 1.5rem;
 }
 
 .downloadTitle {
-  font-size: 18px;
+  font-size: 1.3rem;
   font-weight: 600;
-  color: #333;
-  margin: 0 0 10px 0;
+  color: #FFFFFF;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
-.downloadInfo {
-  font-size: 14px;
-  color: #555;
-  margin: 0 0 16px 0;
-}
-
-.downloadNote {
-  font-size: 12px;
-  color: #777;
-  margin: 16px 0 0 0;
-  font-style: italic;
-}
-
-.downloadButtons {
+.downloadButtonsContainer {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 1.2rem;
+  justify-content: center;
+  margin-top: 0.5rem;
 }
 
-.downloadButton {
+/* Base styles for both button types */
+.downloadButtonPrimary,
+.downloadButtonSecondary {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 280px;
+  padding: 12px 18px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
+  overflow: hidden;
   gap: 8px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: white;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  flex: 1;
-  min-width: 150px;
-  border: none;
-  outline: none;
+  text-align: center;
 }
 
-.standardQuality {
-  background-color: #fe2c55;
+/* Purple Button (No Watermark) */
+.downloadButtonPrimary {
+  background: linear-gradient(135deg, #BB86FC, #a06cd5);
+  color: #121212;
+  box-shadow: 0 4px 12px rgba(187, 134, 252, 0.3);
 }
 
-.standardQuality:hover {
-  background-color: #e6113b;
-  transform: translateY(-2px);
+.downloadButtonPrimary:hover {
+  background: linear-gradient(135deg, #a06cd5, #8a5cc2);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(187, 134, 252, 0.4);
 }
 
-.hdQuality {
-  background-color: #3498db;
+/* White Button (With Watermark) */
+.downloadButtonSecondary {
+  background: linear-gradient(135deg, #FFFFFF, #F0F0F0);
+  color: #121212;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
 }
 
-.hdQuality:hover {
-  background-color: #2980b9;
-  transform: translateY(-2px);
+.downloadButtonSecondary:hover {
+  background: linear-gradient(135deg, #F0F0F0, #E0E0E0);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(255, 255, 255, 0.3);
 }
 
-.proxyQuality {
-  background-color: #27ae60;
+/* Arrow Text Styling */
+.arrowTextWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  padding: 4px 10px 4px 8px;
+  margin-left: 5px;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  background-color: #2A2A2A;
+  color: #FFFFFF;
 }
 
-.proxyQuality:hover {
-  background-color: #219955;
-  transform: translateY(-2px);
+.arrowNoWatermark {
+  background-color: #2A2A2A;
 }
 
-.noWatermarkLabel {
-  font-size: 11px;
-  opacity: 0.9;
-  font-weight: normal;
+.arrowWatermark {
+  background-color: #2A2A2A;
 }
 
-.downloadIcon {
-  width: 20px;
-  height: 20px;
-  fill: white;
+.fixedArrow {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
 }
 
-@media (max-width: 520px) {
-  .downloadButton {
-    flex: 100%;
+.popupText {
+  position: relative;
+  display: inline-block;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: center;
+}
+
+/* Added wave animation for each letter */
+.letter {
+  display: inline-block;
+  will-change: transform;
+  animation: letterWave 1.5s ease-in-out infinite;
+}
+
+@keyframes letterWave {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.2);
   }
 }
 
-.title {
-  margin: 0 0 12px 0;
-  font-size: 20px;
-  font-weight: 500;
-  color: #333;
-  line-height: 1.4;
-  overflow-wrap: break-word;
-  max-width: 100%;
+/* Hover animations */
+.downloadButtonPrimary:hover .arrowNoWatermark {
+  background-color: #BB86FC;
+  color: #121212;
+  box-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
 }
 
-.hashtags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
+.downloadButtonSecondary:hover .arrowWatermark {
+  background-color: #FFFFFF;
+  color: #121212;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-.hashtag {
-  background-color: #f2f2f2;
-  color: #444;
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 14px;
-  transition: all 0.2s ease;
+.downloadButtonPrimary:hover .popupText,
+.downloadButtonSecondary:hover .popupText {
+  animation: popupAnimation 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.hashtag:hover {
-  background-color: #fe2c55;
-  color: white;
+@keyframes popupAnimation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
-.noHashtags {
-  color: #888;
-  font-size: 14px;
-  margin: 12px 0 0 0;
-  font-style: italic;
+/* Skeleton Loader for initial data load */
+.skeletonLoader {
+  width: 100%;
+  height: 300px; /* Adjust as needed */
+  background: linear-gradient(90deg, #1e1e1e 25%, #2c2c2c 50%, #1e1e1e 75%);
+  background-size: 200% 100%;
+  animation: skeletonLoading 1.5s infinite linear;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+@keyframes skeletonLoading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (max-width: 600px) {
+  .container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+  .mainTitle {
+    font-size: 2.2rem;
+  }
+  .mainDescription {
+    font-size: 1rem;
+  }
+  .featuresListHome li {
+    font-size: 0.9rem;
+  }
+  .input {
+    font-size: 0.9rem;
+  }
+  .button {
+    font-size: 0.9rem;
+    padding: 10px 15px;
+  }
+  .avatar {
+    width: 50px;
+    height: 50px;
+  }
+  .username { font-size: 1.1rem; }
+  .videoTitle { font-size: 1.2rem; }
+  
+  /* Responsive adjustments for stats row */
+  .statsContainer {
+    padding: 0.75rem 0.5rem;
+    justify-content: space-around;
+    gap: 0.25rem;
+  }
+  
+  .statItem {
+    padding: 0.25rem;
+    min-width: 60px;
+  }
+  
+  .statIcon {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .statLabel {
+    font-size: 0.7rem;
+    margin-bottom: 0.1rem;
+  }
+  
+  .statValue {
+    font-size: 0.9rem;
+  }
+  
+  /* Responsive download buttons */
+  .downloadButtonsContainer {
+    flex-direction: column;
+  }
+  
+  .downloadButtonPrimary,
+  .downloadButtonSecondary {
+    width: 100%;
+    max-width: none;
+    padding: 12px 15px;
+  }
+  
+  .pulseText {
+    font-size: 0.9rem;
+    padding: 2px 6px;
+  }
+  
+  .slideText {
+    font-size: 0.9rem;
+    padding: 3px 6px;
+  }
+  
+  /* Mobile styles for arrow text */
+  .arrowTextWrapper {
+    padding: 3px 8px 3px 6px;
+    font-size: 0.85rem;
+  }
+  
+  .fixedArrow {
+    margin-right: 6px;
+    font-size: 0.9rem;
+  }
+  
+  .popupText {
+    font-size: 0.85rem;
+  }
 } 

@@ -7,22 +7,22 @@
 
 html,
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   line-height: 1.6;
   font-size: 16px;
-  color: #333;
-  background-color: #f9f9f9;
+  background-color: #121212; /* Main dark background */
+  color: #E0E0E0; /* Light gray text */
 }
 
 a {
-  color: #fe2c55;
+  color: #BB86FC; /* A common subtle accent for dark themes, can be changed to white/gray if strict monochrome */
   text-decoration: none;
-  transition: color 0.2s ease;
 }
 
 a:hover {
-  color: #e6113b;
   text-decoration: underline;
 }
 
@@ -36,6 +36,26 @@ input,
 textarea, 
 select {
   font: inherit;
+  background-color: #2C2C2C; /* Darker input background */
+  color: #E0E0E0;
+  border: 1px solid #333333; /* Subtle border */
+  padding: 0.5em;
+  border-radius: 4px;
+}
+
+input::placeholder {
+  color: #A0A0A0; /* Placeholder text color */
+}
+
+button {
+  cursor: pointer;
+  background-color: #333333; /* Default button dark background */
+  color: #FFFFFF; /* White text on buttons */
+  border: 1px solid #555555;
+}
+
+button:hover {
+  background-color: #444444;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -46,20 +66,20 @@ h1, h2, h3, h4, h5, h6 {
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
-  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #1E1E1E; /* Scrollbar track color */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ddd;
+  background-color: #555; /* Scrollbar thumb color */
   border-radius: 4px;
+  border: 2px solid #1E1E1E; /* Creates padding around thumb */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #ccc;
+  background-color: #777;
 }
 
 /* Focus styles for accessibility */
