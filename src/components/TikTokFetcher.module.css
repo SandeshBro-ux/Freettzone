@@ -1,0 +1,383 @@
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.searchContainer {
+  padding: 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.input {
+  flex: 1;
+  padding: 14px 16px;
+  font-size: 16px;
+  border: 2px solid #f0f0f0;
+  border-radius: 8px;
+  background: #f9f9f9;
+  transition: all 0.2s ease;
+  color: #333;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #fe2c55;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(254, 44, 85, 0.1);
+}
+
+.input::placeholder {
+  color: #999;
+}
+
+.button {
+  padding: 14px 24px;
+  background: #fe2c55;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button:hover {
+  background: #e6113b;
+  transform: translateY(-1px);
+}
+
+.button:disabled {
+  background: #ffb8c5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+}
+
+.loader {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.errorMessage {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background-color: #fff0f0;
+  border-radius: 8px;
+  color: #e6113b;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.errorIcon {
+  width: 20px;
+  height: 20px;
+  fill: #e6113b;
+  flex-shrink: 0;
+}
+
+.resultContainer {
+  background: #fff;
+}
+
+.headerSection {
+  padding: 16px 24px;
+}
+
+.profileSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.usernameContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.usernameLabel {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.username {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.mediaContainer {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  aspect-ratio: 9/16;
+  max-height: 600px;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 340px;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.overlay {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.duration {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.durationIcon {
+  width: 14px;
+  height: 14px;
+  fill: white;
+}
+
+.statsContainer {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 24px;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #f0f0f0;
+  max-width: 340px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: calc(50% - 12px);
+}
+
+.statIcon {
+  width: 24px;
+  height: 24px;
+  fill: #fe2c55;
+}
+
+.statValue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 16px;
+  color: #333;
+}
+
+.statValue strong {
+  font-weight: 700;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: #888;
+  margin-top: -2px;
+}
+
+.contentInfo {
+  padding: 20px 24px;
+}
+
+.downloadSection {
+  margin-bottom: 24px;
+  padding: 18px;
+  background-color: #f8f8f8;
+  border-radius: 12px;
+}
+
+.downloadTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.downloadInfo {
+  font-size: 14px;
+  color: #555;
+  margin: 0 0 16px 0;
+}
+
+.downloadNote {
+  font-size: 12px;
+  color: #777;
+  margin: 16px 0 0 0;
+  font-style: italic;
+}
+
+.downloadButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.downloadButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  flex: 1;
+  min-width: 150px;
+  border: none;
+  outline: none;
+}
+
+.standardQuality {
+  background-color: #fe2c55;
+}
+
+.standardQuality:hover {
+  background-color: #e6113b;
+  transform: translateY(-2px);
+}
+
+.hdQuality {
+  background-color: #3498db;
+}
+
+.hdQuality:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+.proxyQuality {
+  background-color: #27ae60;
+}
+
+.proxyQuality:hover {
+  background-color: #219955;
+  transform: translateY(-2px);
+}
+
+.noWatermarkLabel {
+  font-size: 11px;
+  opacity: 0.9;
+  font-weight: normal;
+}
+
+.downloadIcon {
+  width: 20px;
+  height: 20px;
+  fill: white;
+}
+
+@media (max-width: 520px) {
+  .downloadButton {
+    flex: 100%;
+  }
+}
+
+.title {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: #333;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.hashtag {
+  background-color: #f2f2f2;
+  color: #444;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.hashtag:hover {
+  background-color: #fe2c55;
+  color: white;
+}
+
+.noHashtags {
+  color: #888;
+  font-size: 14px;
+  margin: 12px 0 0 0;
+  font-style: italic;
+} 
