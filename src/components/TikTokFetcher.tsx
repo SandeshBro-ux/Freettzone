@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import Head from 'next/head';
 import axios from 'axios';
 import styles from './TikTokFetcher.module.css';
 
@@ -239,6 +240,12 @@ export default function TikTokFetcher() {
 
   return (
     <div className={styles.container}>
+      <Head>
+        <title>Free Tiktok Zone</title>
+        <meta name="description" content="Unlock the full potential of TikTok content. Paste any TikTok video URL to instantly fetch details, view statistics, and download videos in various formats." />
+        <link rel="icon" href="/Freezone.png" />
+      </Head>
+
       {!data && !loading && !error && (
         <div className={styles.frontPageContent}>
           <TikTokLogo />
