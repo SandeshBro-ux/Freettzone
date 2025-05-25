@@ -242,7 +242,7 @@ export default function TikTokFetcher() {
       {!data && !loading && !error && (
         <div className={styles.frontPageContent}>
           <TikTokLogo />
-          <h1 className={styles.mainTitle}>TikTok Info Fetcher</h1>
+          <h1 className={styles.mainTitle}>Free Tiktok Zone</h1>
           <p className={styles.mainDescription}>
             Unlock the full potential of TikTok content. Paste any TikTok video URL to instantly fetch details, view statistics, and download videos in various formats.
           </p>

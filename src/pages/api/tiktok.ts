@@ -43,21 +43,17 @@ export default async function handler(
 
   const { url } = req.body;
 
-  // Validate that the URL is a TikTok URL
-  if (!url || !url.includes('tiktok.com')) {
-    return res.status(400).json({ error: 'Only TikTok URLs are supported' });
+  // Validate that the URL is a TikTok URL (more permissive for initial check)
+  if (!url || !(url.includes('tiktok.com') || url.includes('vm.tiktok.com'))) {
+    return res.status(400).json({ error: 'Only TikTok URLs are supported (tiktok.com, vm.tiktok.com)' });
   }
 
-  // Validate URL format more specifically for TikTok videos and photos
-  const tiktokPattern = /^https?:\/\/(www\.)?tiktok\.com\/@[^/]+\/(video|photo)\/\d+(\?[^/]*)?$/i;
-  if (!tiktokPattern.test(url)) {
-    return res.status(400).json({ error: 'Invalid TikTok URL format. Please use a valid video or photo URL.' });
-  }
+  // This pattern will be used to validate the *final* URL after redirects
+  const finalUrlPattern = /@([^/]+)\/(video|photo)\/(\d+)/i;
 
   try {
-    console.log(`Fetching TikTok data from URL: ${url}`);
+    console.log(`Fetching TikTok data from initial URL: ${url}`);
     
-    // TikTok has anti-scraping measures, so we need to pretend to be a legitimate browser
     const response = await axios.get(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -84,6 +80,17 @@ export default async function handler(
     });
 
     const htmlContent = response.data;
+    const finalUrl = response.request?.res?.responseUrl || response.config.url || url;
+    console.log(`Final URL after redirects: ${finalUrl}`);
+
+    // Validate the final URL structure
+    const finalUrlMatch = finalUrl.match(finalUrlPattern);
+    if (!finalUrlMatch) {
+      return res.status(400).json({ error: 'Invalid TikTok video/photo URL structure after redirect. Please use a direct link to a video or photo.' });
+    }
+    
+    const usernameFromFinalUrl = finalUrlMatch[1];
+    const videoIdFromFinalUrl = finalUrlMatch[3];
     
     let jsonData = null;
     
@@ -214,11 +221,8 @@ export default async function handler(
       }
     }
     
-    if (!username) {
-      const usernameMatch = url.match(/@([^\/]+)/);
-      if (usernameMatch && usernameMatch[1]) {
-        username = usernameMatch[1];
-      }
+    if (!username) { // If JSON didn't provide username, try to get it from the final URL
+      username = usernameFromFinalUrl;
     }
     
     // If we still couldn't extract hashtags, try from the title
@@ -227,17 +231,14 @@ export default async function handler(
     }
     
     // Build result with all extracted information
-    const videoIdFromUrl = url.match(/\/video\/(\d+)/)?.[1] || '';
-    const usernameFromUrl = username || '';
-
     const result = {
       thumbnail: thumbnail || 'https://placehold.co/600x800/fe2c55/ffffff?text=TikTok+Content',
-      title: title || `Video by @${usernameFromUrl}`,
+      title: title || `Content by @${username}`,
       hashtags: hashtags,
-      duration: 0, // Photos don't have duration
+      duration: 0, // Placeholder, consider extracting if available
       profile: {
-        username: usernameFromUrl || 'N/A',
-        avatar: avatar || `https://ui-avatars.com/api/?name=${usernameFromUrl}&background=random&size=128`
+        username: username || 'N/A',
+        avatar: avatar || `https://ui-avatars.com/api/?name=${username}&background=random&size=128`
       },
       stats: {
         likes: likes || 0,
@@ -246,13 +247,8 @@ export default async function handler(
         views: views || 0
       },
       downloadOptions: {
-        // For "Download (No Watermark)" button
-        proxyUrl: `/api/tiktok-video-download/${encodeURIComponent(videoIdFromUrl)}/Freetiktokzone_HD.mp4?username=${encodeURIComponent(usernameFromUrl)}`,
-        
-        // For "Download SD" button - now with watermark option
-        altProxyUrl: `/api/tiktok-video-download/${encodeURIComponent(videoIdFromUrl)}/Freetiktokzone_SD.mp4?username=${encodeURIComponent(usernameFromUrl)}&pref_source=alt1&watermark=true`,
-        
-        // Original download URLs (if available directly from TikTok)
+        proxyUrl: `/api/tiktok-video-download/${encodeURIComponent(videoIdFromFinalUrl)}/Freetiktokzone_HD.mp4?username=${encodeURIComponent(username)}`,
+        altProxyUrl: `/api/tiktok-video-download/${encodeURIComponent(videoIdFromFinalUrl)}/Freetiktokzone_SD.mp4?username=${encodeURIComponent(username)}&pref_source=alt1&watermark=true`,
         videoUrl: videoUrl || '',
         hdVideoUrl: hdVideoUrl || ''
       }
