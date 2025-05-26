@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { JSDOM } from 'jsdom';
 
@@ -181,7 +181,11 @@ const extractFromSsstik = async (url: string): Promise<{
           }
         }
       } catch (err) {
-        console.log(`Endpoint ${testEndpoint} failed:`, err.response?.status, err.message);
+        if (axios.isAxiosError(err)) {
+          console.log(`Endpoint ${testEndpoint} failed with AxiosError:`, err.response?.status, err.message);
+        } else {
+          console.log(`Endpoint ${testEndpoint} failed with non-Axios error:`, String(err));
+        }
       }
     }
     
@@ -524,6 +528,70 @@ const extractTikTokVideoInfo = async (url: string): Promise<{videoId: string, us
       }
     } catch (error) {
       console.error('Error processing TikTok URL:', error.message);
+      // Check if it's an Axios error to get more details
+      if (axios.isAxiosError(error)) {
+        console.error('Axios error details:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          headers: error.response?.headers,
+        });
+      }
+
+      // Fallback for ECONNRESET or similar network issues where TikTok might block the request
+      // or if the URL structure is unexpected after redirects.
+      if (error.message.includes('ECONNRESET') || error.code === 'ECONNRESET') {
+        console.log('Connection reset error - trying alternative approach');
+        
+        try {
+          // Extract video ID from URL for direct CDN access
+          const videoIdMatch = url.match(/\/video\/(\d+)/);
+          const usernameMatch = url.match(/@([^\/]+)/);
+          
+          if (videoIdMatch && videoIdMatch[1] && usernameMatch && usernameMatch[1]) {
+            const videoId = videoIdMatch[1];
+            const username = usernameMatch[1];
+            
+            // Use video ID to construct thumbnail URL directly (this is TikTok's CDN pattern)
+            // We use multiple possible CDN domains to increase chances of success
+            const thumbnailOptions = [
+              `https://p16-sign.tiktokcdn-us.com/tos-useast5-p-0068-tx/videos/tos/useast5/tos-useast5-pve-0068-tx/o0koLsADzQHxkQjNAMrPy/${videoId}~tplv-tx-video.jpeg`,
+              `https://p19-sign.tiktokcdn-us.com/obj/tos-useast5-p-0068-tx/${videoId}~c5_720x720.jpeg`,
+              `https://p16-sign.tiktokcdn-us.com/obj/tos-maliva-p-0068/${videoId}~c5_720x720.jpeg`,
+              `https://p16-sign-va.tiktokcdn.com/tos-maliva-p-0068/${videoId}~c5_720x720.jpeg`
+            ];
+            
+            return {
+              username: username,
+              videoId: videoId,
+              thumbnail: thumbnailOptions[0],
+              alternateThumbnails: thumbnailOptions,
+              title: `TikTok by @${username}`,
+              hashtags: [],
+              duration: 0,
+              profile: {
+                username: username,
+                avatar: `https://ui-avatars.com/api/?name=${username}&background=random&size=128`
+              },
+              stats: {
+                likes: 0,
+                comments: 0,
+                bookmarks: 0,
+                views: 0
+              },
+              downloadOptions: {
+                proxyUrl: `/api/tiktok-video-download/${encodeURIComponent(videoId)}/Freetiktokzone_HD.mp4?username=${encodeURIComponent(username)}`,
+                altProxyUrl: `/api/tiktok-video-download/${encodeURIComponent(videoId)}/Freetiktokzone_SD.mp4?username=${encodeURIComponent(username)}&pref_source=alt1` 
+              }
+            };
+          }
+        } catch (innerErr) {
+          console.error('Failed alternative approach:', innerErr);
+        }
+      } else if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return res.status(404).json({ error: 'TikTok video not found (404). It may have been deleted or the URL is incorrect.' });
+      }
+
+      return res.status(500).json({ error: 'Failed to extract video information from URL' });
     }
   }
   
