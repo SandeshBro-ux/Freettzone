@@ -41,6 +41,17 @@
   font-weight: 700;
   color: #FFFFFF;
   letter-spacing: -0.05em;
+  text-shadow: 0 0 3px #fff, 0 0 7px #0073e6;
+  animation: subtle-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes subtle-glow {
+  from {
+    text-shadow: 0 0 3px #fff, 0 0 5px #0073e6;
+  }
+  to {
+    text-shadow: 0 0 4px #fff, 0 0 10px #0073e6;
+  }
 }
 
 .description {

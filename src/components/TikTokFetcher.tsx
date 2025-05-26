@@ -20,6 +20,7 @@ interface TikTokData {
   downloadOptions?: {
     proxyUrl?: string; // For no-watermark HD
     altProxyUrl?: string; // For watermarked HD (previously SD)
+    audioUrl?: string; // For MP3 audio download
     // videoUrl?: string; // Direct from TikTok, often watermarked
     // hdVideoUrl?: string; // Direct from TikTok, often watermarked or clean
   };
@@ -79,26 +80,53 @@ export default function TikTokFetcher() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const SPECIFIC_REDIRECT_ERROR = "Invalid TikTok video/photo URL structure after redirect. Please use a direct link to a video or photo.";
+  const USER_FRIENDLY_REDIRECT_ERROR = "This TikTok URL (often from shared or Lite links like vm.tiktok.com) couldn't be processed. This can happen if the link doesn't point to a direct video page after redirection. Please try finding a more direct link to the video if this issue persists.";
+  const VM_TIKTOK_REDIRECT_ERROR = "It seems there's an issue processing this TikTok Lite link (vm.tiktok.com). Your API at /api/tiktok tried to follow the link, but the resulting page wasn't recognized. This may require an update to your backend API to better handle these specific redirects and the pages they lead to.";
+
   const fetchData = useCallback(async () => {
     if (!url) {
       setError('Please enter a TikTok URL');
       return;
     }
+
+    let processedUrl = url;
+    if (url.startsWith('@https://')) {
+      processedUrl = url.substring(1);
+    }
+
     setLoading(true);
     setData(null);
     setError(null);
     try {
-      const response = await axios.post('/api/tiktok', { url });
+      const response = await axios.post('/api/tiktok', { url: processedUrl });
       setData(response.data);
       if (response.data.error) {
-        setError(response.data.error);
+        if (response.data.error === SPECIFIC_REDIRECT_ERROR) {
+          if (processedUrl.includes('vm.tiktok.com')) {
+            setError(VM_TIKTOK_REDIRECT_ERROR);
+          } else {
+            setError(USER_FRIENDLY_REDIRECT_ERROR);
+          }
+        } else {
+          setError(response.data.error);
+        }
       }
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.error || 'Failed to fetch data. Please check the URL and try again.');
+      const backendError = err.response?.data?.error;
+      if (backendError === SPECIFIC_REDIRECT_ERROR) {
+        if (processedUrl.includes('vm.tiktok.com')) {
+          setError(VM_TIKTOK_REDIRECT_ERROR);
+        } else {
+          setError(USER_FRIENDLY_REDIRECT_ERROR);
+        }
+      } else {
+        setError(backendError || 'Failed to fetch data. Please check the URL and try again.');
+      }
     }
     setLoading(false);
-  }, [url]);
+  }, [url, SPECIFIC_REDIRECT_ERROR, USER_FRIENDLY_REDIRECT_ERROR, VM_TIKTOK_REDIRECT_ERROR]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -111,12 +139,22 @@ export default function TikTokFetcher() {
       setError('Download link is not available for this option.');
       return;
     }
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    
+    // Check if this is an external URL (from SSSTik) or an internal API route
+    if (downloadUrl.startsWith('http')) {
+      console.log('Using direct external download URL:', downloadUrl);
+      // Open URL in new tab for direct download
+      window.open(downloadUrl, '_blank');
+    } else {
+      // Internal API route download
+      console.log('Using internal API download route:', downloadUrl);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   const downloadImage = async (imageUrl: string | undefined, filename: string) => {
@@ -215,6 +253,14 @@ export default function TikTokFetcher() {
                   HD Download <PulseText text="With Watermark" type="watermark" />
                 </button>
               )}
+              {data.downloadOptions.audioUrl && (
+                <button 
+                  onClick={() => downloadVideo(data.downloadOptions?.audioUrl, `freettzone_Audio.mp3`)}
+                  className={styles.downloadButtonSecondary}
+                >
+                  <span className={styles.audioIcon}>🎵</span> Download Audio (MP3)
+                </button>
+              )}
               {data.profile.avatar && (
                 <button
                   onClick={() => downloadImage(data.profile.avatar, `freettzone_avatar.jpg`)}
@@ -253,11 +299,12 @@ export default function TikTokFetcher() {
           <p className={styles.mainDescription}>
             Unlock the full potential of TikTok content. Paste any TikTok video URL to instantly fetch details, view statistics, and download videos in various formats.
           </p>
+          <h3 className={styles.weOfferTitle}>We offer:</h3>
           <ul className={styles.featuresListHome}>
-            <li>High-Quality Downloads</li>
-            <li>Watermark-Free Options</li>
-            <li>Detailed Video Statistics</li>
-            <li>User-Friendly Interface</li>
+            <li className={styles.featureItem}>High-Quality Downloads</li>
+            <li className={styles.featureItem}>Watermark-Free Options</li>
+            <li className={styles.featureItem}>Detailed Video Statistics</li>
+            <li className={styles.featureItem}>User-Friendly Interface</li>
           </ul>
         </div>
       )}

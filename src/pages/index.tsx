@@ -6,7 +6,7 @@ export default function HomePage() {
     <div className={styles.container}>
       <main className={styles.main}>
         <h1 className={styles.title}>
-          TikTok Info Fetcher
+          Welcome to Free Tiktok Zone
         </h1>
         <TikTokFetcher />
       </main>
