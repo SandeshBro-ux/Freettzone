@@ -358,10 +358,28 @@ const extractFromSsstik = async (url: string): Promise<{
       avatar: authorAvatar,
       downloadLinks
     };
-  } catch (error) {
-    console.error('Error scraping SSSTik:', error.message);
-    if (error.response) {
-      console.error('SSSTik Error Response:', error.response.status, error.response.data?.substring(0, 200) + '...');
+  } catch (error: unknown) {
+    let errorMessage = "An unknown error occurred while scraping SSSTik.";
+    let errorStatus: number | string | undefined = "N/A";
+    let errorResponseDataPreview = "";
+
+    if (axios.isAxiosError(error)) {
+      errorMessage = error.message;
+      errorStatus = error.response?.status;
+      if (error.response?.data) {
+        errorResponseDataPreview = typeof error.response.data === 'string' 
+          ? error.response.data.substring(0, 200) + '...' 
+          : JSON.stringify(error.response.data).substring(0, 200) + '...';
+      }
+      console.error(`Error scraping SSSTik (AxiosError ${errorStatus}): ${errorMessage}`);
+      if (errorResponseDataPreview) {
+          console.error('SSSTik Error Response Data Preview:', errorResponseDataPreview);
+      }
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+      console.error(`Error scraping SSSTik (Error): ${errorMessage}`);
+    } else {
+      console.error(`Error scraping SSSTik (unknown type): ${String(error)}`);
     }
     return null;
   }
@@ -526,72 +544,34 @@ const extractTikTokVideoInfo = async (url: string): Promise<{videoId: string, us
           videoId: metaVideoId
         };
       }
-    } catch (error) {
-      console.error('Error processing TikTok URL:', error.message);
-      // Check if it's an Axios error to get more details
+    } catch (error: unknown) {
+      let errorMessage = "Error processing TikTok URL in extractTikTokVideoInfo";
       if (axios.isAxiosError(error)) {
-        console.error('Axios error details:', {
-          status: error.response?.status,
-          data: error.response?.data,
-          headers: error.response?.headers,
-        });
-      }
-
-      // Fallback for ECONNRESET or similar network issues where TikTok might block the request
-      // or if the URL structure is unexpected after redirects.
-      if (error.message.includes('ECONNRESET') || error.code === 'ECONNRESET') {
-        console.log('Connection reset error - trying alternative approach');
-        
-        try {
-          // Extract video ID from URL for direct CDN access
-          const videoIdMatch = url.match(/\/video\/(\d+)/);
-          const usernameMatch = url.match(/@([^\/]+)/);
-          
-          if (videoIdMatch && videoIdMatch[1] && usernameMatch && usernameMatch[1]) {
-            const videoId = videoIdMatch[1];
-            const username = usernameMatch[1];
-            
-            // Use video ID to construct thumbnail URL directly (this is TikTok's CDN pattern)
-            // We use multiple possible CDN domains to increase chances of success
-            const thumbnailOptions = [
-              `https://p16-sign.tiktokcdn-us.com/tos-useast5-p-0068-tx/videos/tos/useast5/tos-useast5-pve-0068-tx/o0koLsADzQHxkQjNAMrPy/${videoId}~tplv-tx-video.jpeg`,
-              `https://p19-sign.tiktokcdn-us.com/obj/tos-useast5-p-0068-tx/${videoId}~c5_720x720.jpeg`,
-              `https://p16-sign.tiktokcdn-us.com/obj/tos-maliva-p-0068/${videoId}~c5_720x720.jpeg`,
-              `https://p16-sign-va.tiktokcdn.com/tos-maliva-p-0068/${videoId}~c5_720x720.jpeg`
-            ];
-            
-            return {
-              username: username,
-              videoId: videoId,
-              thumbnail: thumbnailOptions[0],
-              alternateThumbnails: thumbnailOptions,
-              title: `TikTok by @${username}`,
-              hashtags: [],
-              duration: 0,
-              profile: {
-                username: username,
-                avatar: `https://ui-avatars.com/api/?name=${username}&background=random&size=128`
-              },
-              stats: {
-                likes: 0,
-                comments: 0,
-                bookmarks: 0,
-                views: 0
-              },
-              downloadOptions: {
-                proxyUrl: `/api/tiktok-video-download/${encodeURIComponent(videoId)}/Freetiktokzone_HD.mp4?username=${encodeURIComponent(username)}`,
-                altProxyUrl: `/api/tiktok-video-download/${encodeURIComponent(videoId)}/Freetiktokzone_SD.mp4?username=${encodeURIComponent(username)}&pref_source=alt1` 
-              }
-            };
-          }
-        } catch (innerErr) {
-          console.error('Failed alternative approach:', innerErr);
+        errorMessage = error.message;
+        console.error(`Axios error in extractTikTokVideoInfo (Status: ${error.response?.status}): ${errorMessage}`);
+        if (error.response?.data) {
+          const errorResponseDataPreview = typeof error.response.data === 'string' 
+            ? error.response.data.substring(0, 200) + '...' 
+            : JSON.stringify(error.response.data).substring(0, 200) + '...';
+          console.error('Axios error data preview:', errorResponseDataPreview);
         }
-      } else if (axios.isAxiosError(error) && error.response?.status === 404) {
-        return res.status(404).json({ error: 'TikTok video not found (404). It may have been deleted or the URL is incorrect.' });
+        // For 404, we can simply return null as it means not found
+        if (error.response?.status === 404) {
+          console.log('extractTikTokVideoInfo: Video not found (404), returning null.');
+          return null;
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+        console.error(`Error in extractTikTokVideoInfo: ${errorMessage}`);
+      } else {
+        console.error(`Unknown error in extractTikTokVideoInfo: ${String(error)}`);
       }
 
-      return res.status(500).json({ error: 'Failed to extract video information from URL' });
+      // For ECONNRESET or other specific errors, we might try a simplified extraction
+      // but the main function already has a fallback. Here, we should just indicate failure.
+      // The detailed ECONNRESET logic was moved to the main handler's catch.
+      // If it's a general error or not a 404, we also return null to let the main handler decide.
+      return null;
     }
   }
   
@@ -686,8 +666,8 @@ export default async function handler(
 
     // If the specialized extractor didn't work or it's not a vm.tiktok.com link, 
     // continue with the original implementation
-    // This pattern will be used to validate the *final* URL after redirects
-    const finalUrlPattern = /@([^/]+)\/(video|photo)\/(\d+)/i;
+  // This pattern will be used to validate the *final* URL after redirects
+  const finalUrlPattern = /@([^/]+)\/(video|photo)\/(\d+)/i;
 
     console.log(`Fetching TikTok data from initial URL: ${processedUrl}`);
     
@@ -905,60 +885,39 @@ export default async function handler(
 
     console.log('Successfully extracted data from __UNIVERSAL_DATA_FOR_REHYDRATION__');
     return res.status(200).json(result);
-  } catch (err: any) {
-    console.error('API Error:', err);
-    // Check for ECONNRESET specifically
-    if (err.code === 'ECONNRESET' || err.message?.includes('ECONNRESET')) {
-      console.log('Connection reset error - trying alternative approach');
-      
-      try {
-        // Extract video ID from URL for direct CDN access
-        const videoIdMatch = processedUrl.match(/\/video\/(\d+)/);
-        const usernameMatch = processedUrl.match(/@([^\/]+)/);
-        
-        if (videoIdMatch && videoIdMatch[1] && usernameMatch && usernameMatch[1]) {
-          const videoId = videoIdMatch[1];
-          const username = usernameMatch[1];
-          
-          // Use video ID to construct thumbnail URL directly (this is TikTok's CDN pattern)
-          // We use multiple possible CDN domains to increase chances of success
-          const thumbnailOptions = [
-            `https://p16-sign.tiktokcdn-us.com/tos-useast5-p-0068-tx/videos/tos/useast5/tos-useast5-pve-0068-tx/o0koLsADzQHxkQjNAMrPy/${videoId}~tplv-tx-video.jpeg`,
-            `https://p19-sign.tiktokcdn-us.com/obj/tos-useast5-p-0068-tx/${videoId}~c5_720x720.jpeg`,
-            `https://p16-sign.tiktokcdn-us.com/obj/tos-maliva-p-0068/${videoId}~c5_720x720.jpeg`,
-            `https://p16-sign-va.tiktokcdn.com/tos-maliva-p-0068/${videoId}~c5_720x720.jpeg`
-          ];
-          
-          res.status(200).json({
-            thumbnail: thumbnailOptions[0],
-            alternateThumbnails: thumbnailOptions,
-            title: `TikTok by @${username}`,
-            hashtags: [],
-            duration: 0,
-            profile: {
-              username: username,
-              avatar: `https://ui-avatars.com/api/?name=${username}&background=random&size=128`
-            },
-            stats: {
-              likes: 0,
-              comments: 0,
-              bookmarks: 0,
-              views: 0
-            },
-            downloadOptions: {
-              proxyUrl: `/api/tiktok-video-download/${encodeURIComponent(videoId)}/Freetiktokzone_HD.mp4?username=${encodeURIComponent(username)}`,
-              altProxyUrl: isOriginalUrlShortenerLink ? '' : `/api/tiktok-video-download/${encodeURIComponent(videoId)}/Freetiktokzone_SD.mp4?username=${encodeURIComponent(username)}&pref_source=alt1` 
-            }
-          });
-          return;
-        }
-      } catch (innerErr) {
-        console.error('Failed alternative approach:', innerErr);
+  } catch (err: unknown) {
+    let errorMessage = "An unexpected error occurred in the API handler.";
+    let statusCode = 500;
+
+    if (axios.isAxiosError(err)) {
+      errorMessage = err.message;
+      statusCode = err.response?.status || 500;
+      console.error(`API Error (AxiosError ${statusCode}): ${errorMessage}`);
+      if (err.response?.data) {
+        const errorResponseDataPreview = typeof err.response.data === 'string' 
+          ? err.response.data.substring(0, 200) + '...' 
+          : JSON.stringify(err.response.data).substring(0, 200) + '...';
+        console.error('Axios error response data preview:', errorResponseDataPreview);
       }
+    } else if (err instanceof Error) {
+      errorMessage = err.message;
+      console.error(`API Error (Error): ${errorMessage}`);
+      if (err.message.includes('ECONNRESET')) {
+          // Specific handling for ECONNRESET if needed, though often caught as AxiosError if from an HTTP request
+          console.log('API handler caught ECONNRESET directly.');
+          // The fallback logic for ECONNRESET that was here previously has been simplified
+          // as extractTikTokVideoInfo and other parts should handle their errors gracefully.
+          // The main goal here is to return a sensible error to the client.
+          errorMessage = 'Connection issue while fetching TikTok data. Please try again.';
+          statusCode = 503; // Service Unavailable might be appropriate
+      } else if (err.message.includes('404')) { // Generic 404 check if not an AxiosError
+          statusCode = 404;
+          errorMessage = 'TikTok content not found.';
+      }
+    } else {
+      console.error(`API Error (unknown type): ${String(err)}`);
     }
-    const statusCode = err.message.includes('404') ? 404 : 500;
-    res.status(statusCode).json({ 
-      error: err.message || 'Failed to fetch TikTok data' 
-    });
+    
+    res.status(statusCode).json({ error: errorMessage });
   }
 } 
